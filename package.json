@@ -1,0 +1,56 @@
+{
+  "name": "topferos-md",
+  "version": "1.0.0",
+  "description": "🦁 TOPFEROS MD - Powerful WhatsApp Multi-Device Bot built with Baileys, AI and Plugins.",
+  "main": "start.js",
+  "type": "commonjs",
+  "author": "TOPFEROS TECH",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node start.js",
+    "dev": "nodemon start.js",
+    "restart": "npm run start",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "latest",
+    "axios": "^1.11.0",
+    "chalk": "^5.4.1",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "file-type": "^20.5.0",
+    "fs-extra": "^11.3.0",
+    "moment-timezone": "^0.6.0",
+    "mongoose": "^8.16.5",
+    "node-cache": "^5.1.2",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "pino": "^9.7.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.34.3",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3",
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.31.0",
+    "nodemon": "^3.1.10"
+  },
+  "keywords": [
+    "topferos-md",
+    "whatsapp",
+    "baileys",
+    "bot",
+    "ai",
+    "multi-device",
+    "plugins"
+  ]
+}
