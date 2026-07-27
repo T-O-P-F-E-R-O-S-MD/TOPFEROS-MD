@@ -11,7 +11,21 @@
     "start": "node start.js",
     "dev": "nodemon start.js",
     "restart": "npm run start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "setup": "bash setup-production.sh",
+    "deploy": "bash deploy-all.sh",
+    "deploy:heroku": "bash deploy-heroku.sh",
+    "deploy:railway": "bash deploy-railway.sh",
+    "deploy:vps": "bash deploy-vps.sh",
+    "docker:build": "docker build -t topferos-md:latest .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f topferos-md",
+    "check": "npm run lint && npm test"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -46,7 +60,9 @@
   },
   "devDependencies": {
     "eslint": "^9.31.0",
-    "nodemon": "^3.1.10"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^6.3.3"
   },
   "keywords": [
     "topferos-md",
