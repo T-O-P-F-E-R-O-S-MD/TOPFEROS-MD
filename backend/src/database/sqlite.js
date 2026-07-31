@@ -1,61 +1,50 @@
 "use strict";
 
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
-const fs = require("fs-extra");
-
+const mongoose = require("mongoose");
 const logger = require("../utils/logger");
-
-const databaseFolder = path.join(process.cwd(), "database");
-const databaseFile = path.join(databaseFolder, "topferos.db");
+const config = require("../config/config");
 
 let db = null;
 
 async function connectSQLite() {
     try {
-        await fs.ensureDir(databaseFolder);
+        if (!config.database.uri) {
+            logger.warn("MongoDB URI not found. Database connection skipped.");
+            return null;
+        }
 
-        db = new sqlite3.Database(databaseFile, (err) => {
-            if (err) {
-                logger.error("SQLite connection failed.", err);
-                return;
-            }
+        if (mongoose.connection.readyState === 1) {
+            db = mongoose.connection;
+            return db;
+        }
 
-            logger.success("SQLite connected successfully.");
+        await mongoose.connect(config.database.uri, {
+            autoIndex: true,
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 10000,
+            socketTimeoutMS: 45000
         });
 
-        db.serialize(() => {
-            db.run(`
-                CREATE TABLE IF NOT EXISTS settings (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT UNIQUE,
-                    value TEXT
-                )
-            `);
+        db = mongoose.connection;
 
-            db.run(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    jid TEXT UNIQUE,
-                    name TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            `);
+        logger.success("MongoDB connected successfully.");
 
-            db.run(`
-                CREATE TABLE IF NOT EXISTS groups (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    jid TEXT UNIQUE,
-                    subject TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            `);
+        db.on("error", (err) => {
+            logger.error("MongoDB Error", err);
+        });
+
+        db.on("disconnected", () => {
+            logger.warn("MongoDB disconnected.");
+        });
+
+        db.on("reconnected", () => {
+            logger.success("MongoDB reconnected.");
         });
 
         return db;
 
     } catch (err) {
-        logger.error("Failed to initialize SQLite.", err);
+        logger.error("Failed to initialize MongoDB.", err);
         return null;
     }
 }
