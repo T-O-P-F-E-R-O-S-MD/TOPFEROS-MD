@@ -1,59 +1,21 @@
 "use strict";
 
-const config = require("../config/config");
 const logger = require("../utils/logger");
-
 const connectMongoDB = require("../database/mongodb");
-const { connectSQLite } = require("../database/sqlite");
 
 async function databaseHandler() {
-
     try {
+        logger.database("Initializing MongoDB...");
 
-        const type = (config.database.type || "mongodb").toLowerCase();
+        await connectMongoDB();
 
-        switch (type) {
-
-            case "mongodb":
-
-                logger.database("Initializing MongoDB...");
-
-                await connectMongoDB();
-
-                logger.success("MongoDB initialized successfully.");
-
-                break;
-
-            case "sqlite":
-
-                logger.database("Initializing SQLite...");
-
-                await connectSQLite();
-
-                logger.success("SQLite initialized successfully.");
-
-                break;
-
-            default:
-
-                logger.warn(
-                    `Unknown database type "${type}". Falling back to MongoDB.`
-                );
-
-                await connectMongoDB();
-
-                break;
-        }
-
+        logger.success("MongoDB initialized successfully.");
     } catch (err) {
-
         logger.error(
             "Database initialization failed.",
             err
         );
-
     }
-
 }
 
 module.exports = databaseHandler;
