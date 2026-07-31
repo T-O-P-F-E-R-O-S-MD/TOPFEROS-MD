@@ -1,15 +1,12 @@
 "use strict";
 
-const config = require("../config/config");
 const logger = require("../utils/logger");
-
 const connectMongoDB = require("../database/mongodb");
-const { connectSQLite, getDatabase } = require("../database/sqlite");
 
 class DatabaseService {
 
     constructor() {
-        this.type = (config.database.type || "mongodb").toLowerCase();
+        this.type = "mongodb";
         this.connected = false;
     }
 
@@ -19,35 +16,13 @@ class DatabaseService {
             return true;
         }
 
-        switch (this.type) {
+        await connectMongoDB();
 
-            case "mongodb":
+        this.connected = true;
 
-                await connectMongoDB();
-                this.connected = true;
+        logger.success("MongoDB database ready.");
 
-                logger.success("MongoDB database ready.");
-
-                break;
-
-            case "sqlite":
-
-                await connectSQLite();
-                this.connected = true;
-
-                logger.success("SQLite database ready.");
-
-                break;
-
-            default:
-
-                throw new Error(
-                    `Unsupported database type: ${this.type}`
-                );
-
-        }
-
-        return this.connected;
+        return true;
     }
 
     async disconnect() {
@@ -56,13 +31,9 @@ class DatabaseService {
             return;
         }
 
-        if (this.type === "mongodb") {
+        const mongoose = require("mongoose");
 
-            const mongoose = require("mongoose");
-
-            await mongoose.connection.close();
-
-        }
+        await mongoose.connection.close();
 
         this.connected = false;
 
@@ -70,20 +41,15 @@ class DatabaseService {
     }
 
     getType() {
-        return this.type;
+        return "mongodb";
     }
 
     isConnected() {
         return this.connected;
     }
 
-    getSQLite() {
-
-        if (this.type !== "sqlite") {
-            return null;
-        }
-
-        return getDatabase();
+    getDatabase() {
+        return require("mongoose").connection;
     }
 
 }
